@@ -30,7 +30,7 @@ ava.serial('project show', async t => {
 
 const getOrganisationForProject = async projectId => (await tests.run(`project show --project '${projectId}'`)).organisation;
 
-ava.skip('project transfer', tests.requireSlaveProject(async (t, projects) => {
+ava.serial('project transfer', tests.requireSlaveProject(async (t, projects) => {
     let active_organisation, slave_organisation;
     if (Math.floor(Math.random() * 2) === 0) {
         active_organisation = await getOrganisationForProject(active_project);
