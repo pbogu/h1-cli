@@ -15,16 +15,20 @@ const options = {
         required: true,
     },
     type: {
-        description: 'Disk type ID or name',
+        description: 'Disk type ID or name. Required if no source disk is specified',
         type: 'string',
-        required: true,
     },
     size: {
-        description: 'Disk size in GiB. Required if no source file is specified',
+        description: 'Disk size in GiB. Required if no source file and no disk is specified',
         type: 'int',
     },
     'source-file': {
         description: 'Path to .vhdx file to import',
+        type: 'string',
+        required: false,
+    },
+    'source-disk': {
+        description: 'Source disk name or ID used during cloning',
         type: 'string',
         required: false,
     },
@@ -42,6 +46,19 @@ module.exports = resource => Cli.createCommand('create', {
     plugins: resource.plugins,
     options: options,
     handler: async args => {
+        if (args['source-disk']) {
+            const source = await args.helpers.api.get(`${resource.url(args)}/${args['source-disk']}`);
+            return args.helpers.api.post(`${resource.url(args)}/${args['source-disk']}/actions/clone`, {
+                name: args.name,
+                service: args.type || source.type,
+                tag: require('lib/tags').createTagObject(args.tag),
+            });
+        }
+
+        if (!args.type) {
+            throw Cli.error.cancelled('The \'--type\' parameter is required if no source disk is specified');
+        }
+
         const body = {
             name: args.name,
             service: args.type,
