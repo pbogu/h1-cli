@@ -32,6 +32,8 @@ const main = async () => {
 };
 
 main().catch((err) => {
-    console.error('Something terrible happened.', err);
+    console.error('Something terrible happened.');
+    console.error(err);
+    console.error(err.stack);
     process.exit(-1);
 });
