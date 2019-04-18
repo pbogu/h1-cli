@@ -74,7 +74,7 @@ ava.serial('disk transfer', tests.transferLifeCycle('disk', {
         const password = await tests.getToken();
         const vm = await tests.run(`vm create --name ${tests.getName(t.title)} --os-disk ${osDisk},ssd,10 --type a1.nano --image debian --password ${password}`);
         const consistent_content = await tests.getToken();
-        await ssh.sshVmPassword(vm, password, `echo '${consistent_content}' > ${testFilePath}`);
+        await ssh.sshVmPassword(vm, password, `echo '${consistent_content}' > ${testFilePath}; sync;`);
         if (mode === 'offline') {
             await tests.run(`vm stop  --vm ${vm._id}`);
         }
